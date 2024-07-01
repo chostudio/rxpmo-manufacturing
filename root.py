@@ -19,9 +19,9 @@ CREATE TABLE Manufacturer (
     name VARCHAR(255) NOT NULL,
     address TEXT NOT NULL,
     naics_code VARCHAR(10),
-    product_category VARCHAR(255)
+    product_category VARCHAR(255),
 
-    -- Capabilities fields
+-- Capabilities fields
     capability_id SERIAL PRIMARY KEY,
     manufacturer_id INT REFERENCES ManufacturerProfile(manufacturer_id),
     machine_make_model VARCHAR(255) NOT NULL,
@@ -32,15 +32,23 @@ CREATE TABLE Manufacturer (
     capacity_id SERIAL PRIMARY KEY,
     manufacturer_id INT REFERENCES ManufacturerProfile(manufacturer_id),
     number_of_machines INT NOT NULL,
-    utilization_rate NUMERIC(5, 2) NOT NULL,
+    utilization_rate NUMERIC(5, 2) NOT NULL, -- Utilization Rate for Each Machine %
+    operating_cost_per_hour INT,
+    days_operational INT,
+    shifts_per_day INT,
+    hours_per_shift INT,
+    hours_available_per_week INT
 );
 
 CREATE TABLE Machine (
     machine_id SERIAL PRIMARY KEY,
     manufacturer_id INT REFERENCES Manufacturer(manufacturer_id),
-    type VARCHAR(255) NOT NULL,
-    model VARCHAR(255) NOT NULL,
-    make VARCHAR(255) NOT NULL
+    process VARCHAR(255),
+
+    make_and_model VARCHAR(255) NOT NULL,
+    max_length INT,
+    max_width INT,
+    max_height INT,
 );
 
 CREATE TABLE RawMaterial (
@@ -53,7 +61,6 @@ CREATE TABLE RawMaterial (
 
 """)
 
-cur.execute("CREATE TABLE your_table (id SERIAL PRIMARY KEY, name VARCHAR(255))")
 
 # Commit the changes to the database
 conn.commit()
