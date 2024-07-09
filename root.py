@@ -3,10 +3,10 @@ import psycopg2
 
 # Establish a connection to the PostgreSQL database
 conn = psycopg2.connect(
-  host="your_host",
-  database="your_database",
-  user="your_user",
-  password="your_password"
+  host="localhost",
+  database="chrisho",
+  user="postgres",
+  password="postgres"
 )
 
 # Create a cursor object to interact with the database
@@ -19,24 +19,22 @@ CREATE TABLE Manufacturer (
     manufacturer_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     address TEXT NOT NULL,
-    naics_code VARCHAR(10), -- manufacturer's specialization, optional
-    product_category VARCHAR(255),
--- can refer to machine make model in here
--- and can reference processes query to give all raw material, prosses info, machines, etc.
--- for this manufac just group machine to count it
-
--- manufacturer will link to these
+    naics_code VARCHAR(10), -- optional, manufacturer's specialization
+    product_category VARCHAR(255), -- optional
+    -- can refer to machine make model in here
+    -- and can reference processes query to give all raw material, prosses info, machines, etc.
+    -- for this manufac just group machine to count it
+);
+    -- manufacturer will link to these
 CREATE TABLE Process (
     process_id SERIAL PRIMARY KEY,
     process_name VARCHAR(255),
--- for each manufacturer multiple process ID. one or multiple. for each process have one or more machine associated with it. coudl have multiple machine of same model or different model for same process
--- foreign key refernce the manufacturer table
+    -- for each manufacturer multiple process ID. one or multiple. for each process have one or more machine associated with it. coudl have multiple machine of same model or different model for same process
+    -- foreign key refernce the manufacturer table
     manufacturer_id INT REFERENCES Manufacturer(manufacturer_id),
    
     -- raw_material_used VARCHAR(255) NOT NULL, -- just use the raw material table, based on the manufac. not process
       
-)
-
 );
 
 CREATE TABLE Machine (
@@ -55,6 +53,8 @@ CREATE TABLE Machine (
     shifts_per_day INT NOT NULL,
     hours_per_shift INT NOT NULL,
     hours_available_per_week INT -- Overall Utilization this Week
+
+    manufacturer_id INT FOREIGN KEY REFERENCES Manufacturer(manufacturer_id)
 );
 
 -- track it back to process and manufacturer
@@ -68,6 +68,7 @@ CREATE TABLE RawMaterial (
 
 """)
 
+# these insert values don't work yet due to update
 # Insert values into the Manufacturer table
 cur.execute("""
 INSERT INTO Manufacturer (name, address, naics_code, product_category, machine_make_model, raw_material_used, available_tooling, labor_certs, number_of_machines, utilization_rate, operating_cost_per_hour, days_operational, shifts_per_day, hours_per_shift, hours_available_per_week)
